@@ -1,0 +1,12 @@
+Incluyo un archivo ZIP que contiene los servicios web, para incluirlos la carpeta en la carpeta raíz del proyecto. 
+Estos servicios web se ejecutan bajo el entorno de NodeJS (descargar la versión LTS).
+ 
+Incluyo un archivo SQL (base de datos) que debéis importar y ejecutar en un entorno XAMPP (phpMyAdmin).
+
+Una vez descomprimidos los servicios, abrimos la carpeta con Visual Studio Code, y editamos el archivo src/app.module.ts, 
+cambiando el servidor de la base de datos (host: 'localhost'), 
+y el usuario y contraseña de la base de datos (en XAMPP el usuario por defecto es 'root' y la contraseña cadena vacía).
+Después, desde la carpeta de los servicios (o desde el terminal integrado de VSCode), 
+ejecutáis npm i (instalará las dependencias necesarias) y npm start (lanzará los servicios web). 
+Si cerráis el terminal, los servicios dejarán de ejecutarse (también se pueden parar con Control+c). 
+Los servicios locales estarán ejecutándose en localhost:3001 -> (ejemplo de url: http://localhost:3001/eventos)
