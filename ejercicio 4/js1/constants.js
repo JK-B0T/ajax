@@ -1,3 +1,3 @@
 'use strict';
 
-// Constantes globales aquí
+const SERVER = "https://localhost:3001"

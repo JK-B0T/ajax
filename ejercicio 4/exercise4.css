@@ -6,6 +6,12 @@
     margin-top: 20px;
 }
 
+.card button {
+    width: 100%;
+    background-color: rgb(237, 100, 100);
+    border: none;
+}
+
 @media (min-width: 576px) {
     .card-columns {
         column-count: 2;
