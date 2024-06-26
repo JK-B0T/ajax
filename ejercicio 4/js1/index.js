@@ -30,9 +30,7 @@ partir de dicho formulario y llama al método post() del objeto EventoService). 
 ido bien, añade el evento al array global y muéstralo. Si hay algún error, sería suficiente
 con imprimirlo por consola.
 */
-const Servicios = new EventoService;
-const response = Servicios.getEvents();//.then(respuesta => console.log(respuesta, typeof respuesta,respuesta.eventos));
-console.log(response, typeof response,response.eventos);
+const SERVICIOS = new EventoService;
 
 const imgPreview = document.querySelector("#imgPreview");
 const input = document.querySelector("#image");
@@ -41,6 +39,14 @@ const form = document.querySelector("#newEvent");
 const inputArray = Array.from(document.querySelectorAll("input:not([type='button'])"));
 inputArray.splice(2, 0, document.querySelector("textarea"));
 
+let JSON = {};
+
+SERVICIOS.getEvents().then(respuesta => {
+    respuesta.map((item) => {
+        createEvent(item);
+    });
+});
+
 form.addEventListener("submit", checkInputsValidation, false);
 
     function checkInputsValidation(event) {
@@ -48,7 +54,6 @@ form.addEventListener("submit", checkInputsValidation, false);
         let isFormValid = true;
 
         inputArray.map((element) => {
-            console.log(element, element.value);
             if (element.value === "") {
                 if (!element.classList.contains("is-invalid")) {
                     element.classList.add("is-invalid");
@@ -70,8 +75,10 @@ form.addEventListener("submit", checkInputsValidation, false);
         });
        
         if (isFormValid === true) {
-            createEvent();
-            addEvent();
+            createJSON();
+            SERVICIOS.post(JSON).then((response) => {
+                createEvent(response);
+            }).catch((error) => console.log(error));
             resetForm();
         }
     }
@@ -88,38 +95,43 @@ form.addEventListener("submit", checkInputsValidation, false);
         });
     }
 
-    function addEvent () {
-        return {
-            id: "??????",
+    function createJSON () {
+        JSON = {
             name: inputArray[0].value,
-            descripton: inputArray[1].value,
+            description: inputArray[2].value,
             image: imgPreview.src,
-            price: inputArray[2].value,
-            date: inputArray[3].value,
+            price: +(inputArray[3].value),
+            date: inputArray[1].value,
         }
+        console.log(JSON);
     }
 
-    function createEvent () {
-        const date = new Date(inputArray[1].value + 'T00:00:00');
+    function createEvent (event) {
+        const date = new Date(event.date + 'T00:00:00');
         const formatedDate = new Intl.DateTimeFormat('es-ES').format(date);
 
         let fatherNode = document.querySelector("#eventsContainer");
         //div contenedor -
         let container = document.createElement("div");
         container.setAttribute("class", "card");
-        //imagen --
+        //boton --
         let element = document.createElement("button");
         element.setAttribute("type", "button");
+        element.textContent = "X";
         element.addEventListener("click", () => {
-            //Abrir dialog
-            //Eliminar elemento
-            //Eliminar datos
+            let del = confirm("¿Seguro que quieres borrar el evento?");
+            if(del) {
+                const card = container;
+                SERVICIOS.delete(event.id).then(() => {
+                    card.remove();
+                });
+            }  
         }, false);
         container.append(element);
         //imagen --
         element = document.createElement("img");
         element.setAttribute("class", "card-img-top");
-        element.setAttribute("src", imgPreview.src);
+        element.setAttribute("src", event.image);
         container.append(element);
         //div del cuerpo --
         element = document.createElement("div");
@@ -127,13 +139,13 @@ form.addEventListener("submit", checkInputsValidation, false);
         //cuerpo > h4 ---
         let childElement = document.createElement("h4");
         childElement.setAttribute("class", "card-title");
-        let elementText = document.createTextNode(inputArray[0].value);
+        let elementText = document.createTextNode(event.name);
         childElement.append(elementText);
         element.append(childElement);
         //cuerpo > p ---
         childElement = document.createElement("p");
         childElement.setAttribute("class", "card-text");
-        elementText = document.createTextNode(formatedDate);
+        elementText = document.createTextNode(event.description);
         childElement.append(elementText);
         element.append(childElement);
         container.append(element);
@@ -143,12 +155,12 @@ form.addEventListener("submit", checkInputsValidation, false);
         //footer > small ---
         childElement = document.createElement("small");
         childElement.setAttribute("class", "text-muted");
-        elementText = document.createTextNode(inputArray[2].value);
+        elementText = document.createTextNode(formatedDate);
         childElement.append(elementText);
         //small > span ----
         let youngestElement = document.createElement("span");
         youngestElement.setAttribute("class", "float-right");
-        elementText = document.createTextNode(inputArray[3].value + " €");
+        elementText = document.createTextNode(event.price + " €");
         youngestElement.append(elementText);
         childElement.append(youngestElement);
 
